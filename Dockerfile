@@ -30,7 +30,7 @@ RUN npm install -g --force yarn pm2
 RUN yarn install
 
 # Install express for keep-alive server
-RUN npm install express
+RUN npm install express --legacy-peer-deps
 
 # Expose Render's port
 EXPOSE 3000
