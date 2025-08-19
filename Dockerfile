@@ -14,4 +14,4 @@ RUN npm install -g --force yarn pm2
 
 RUN yarn install
 
-CMD ["npm", "start"]
+CMD ["sh", "-c", "npm start & node server.js"]
