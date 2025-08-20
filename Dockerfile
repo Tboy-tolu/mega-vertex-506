@@ -10,27 +10,29 @@ RUN apk add --no-cache \
     g++
 
 # Clone the bot repo
-RUN echo "$(date)" && git clone -b main https://github.com/souravkl11/raganork-md /rgnk
-
+RUN git clone -b main https://github.com/souravkl11/raganork-md /rgnk
 WORKDIR /rgnk
 
 # Create temp folder
 RUN mkdir -p temp
 
-# Set timezone
 ENV TZ=Asia/Kolkata
 
 # Install global tools
 RUN npm install -g --force yarn pm2
 
-# Install bot dependencies
+# Install dependencies
 RUN yarn install
 
-# Install express for keep-alive server
+# Install express for keep-alive
 RUN npm install express --legacy-peer-deps
 
-# Expose both ports
+# Copy keep-alive.js into container
+COPY keep-alive.js /rgnk/keep-alive.js
+
+# Expose ports
 EXPOSE 10000 3000
 
-# Start bot and keep-alive server simultaneously
+# Run bot + keep-alive server
 CMD pm2 start npm --name bot -- start && node keep-alive.js
+
