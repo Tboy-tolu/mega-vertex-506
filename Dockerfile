@@ -1,7 +1,6 @@
-# Use Node.js 22 (alpine = lightweight)
 FROM node:22-alpine
 
-# Install required system packages
+# Install required packages
 RUN apk add --no-cache \
     git \
     ffmpeg \
@@ -10,11 +9,9 @@ RUN apk add --no-cache \
     make \
     g++
 
-# Clone the bot repo
-RUN echo "$(date)" && \
-    git clone -b main https://github.com/souravkl11/raganork-md /rgnk
+# Clone the bot source
+RUN echo "$(date)" && git clone -b main https://github.com/souravkl11/raganork-md /rgnk
 
-# Set working directory
 WORKDIR /rgnk
 
 # Create temp folder
@@ -33,8 +30,7 @@ RUN yarn install
 RUN npm install express --legacy-peer-deps
 
 # Expose Render's port
-EXPOSE 3000
+EXPOSE 10000
 
-# Start bot and keep-alive server together
-CMD ["sh", "-c", "npm start & node server.js"]
-
+# Run a tiny Express server + your bot with PM2
+CMD pm2 start index.js --name bot && pm2 start "node -e \"const express=require('express');const app=express();app.get('/',(req,res)=>res.send('Bot is alive!'));app.listen(process.env.PORT||10000);\"" --name keepalive && pm2 logs
