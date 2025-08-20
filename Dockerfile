@@ -9,7 +9,7 @@ RUN apk add --no-cache \
     make \
     g++
 
-# Clone the bot source
+# Clone the bot repo
 RUN echo "$(date)" && git clone -b main https://github.com/souravkl11/raganork-md /rgnk
 
 WORKDIR /rgnk
@@ -29,8 +29,8 @@ RUN yarn install
 # Install express for keep-alive server
 RUN npm install express --legacy-peer-deps
 
-# Expose Render's port
-EXPOSE 10000
+# Expose both ports
+EXPOSE 10000 3000
 
-# Run a tiny Express server + your bot with PM2
-CMD pm2 start index.js --name bot && pm2 start "node -e \"const express=require('express');const app=express();app.get('/',(req,res)=>res.send('Bot is alive!'));app.listen(process.env.PORT||10000);\"" --name keepalive && pm2 logs
+# Start bot and keep-alive server simultaneously
+CMD pm2 start npm --name bot -- start && node keep-alive.js
